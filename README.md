@@ -11,7 +11,7 @@ Funciona offline, em celular ou notebook, sem instalação e sem servidor.
 
 ## Por que existe
 
-Em campanhas de campo em riachos de cabeceira, erros de leitura (sonda descalibrada, dígito trocado na anotação, eletrodo sujo) costumam ser descobertos só semanas depois, na digitação da planilha — quando voltar ao ponto já não é viável. O StreamLog sinaliza o valor suspeito no momento da digitação, ainda com a equipe no riacho, permitindo repetir a leitura na hora.
+Em campanhas de campo em riachos, erros de leitura (sonda descalibrada, dígito trocado na anotação, eletrodo sujo) costumam ser descobertos só semanas depois, na digitação da planilha — quando voltar ao ponto já não é viável. O StreamLog sinaliza o valor suspeito no momento da digitação, ainda com a equipe no riacho, permitindo repetir a leitura na hora.
 
 Resultado esperado: menos retrabalho, menos deslocamento repetido e dados mais confiáveis ao fim da campanha.
 
