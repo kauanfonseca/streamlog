@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StreamLog — sonda multiparamétrica</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+<style>
+  :root{
+    --bg:#ffffff; --surface:#f6f7f5; --surface-2:#eceee9;
+    --text:#1b2018; --muted:#5f6b5c; --border:#d6dad1;
+    --accent:#2c5f2d; --accent-soft:#e3ece1; --accent-ink:#ffffff;
+    --warn:#b4531f; --warn-soft:#fceee4; --grid:#dfe3da;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#13170f; --surface:#1b2018; --surface-2:#232a1f;
+      --text:#e9ede4; --muted:#a3ae9c; --border:#333c2d;
+      --accent:#8fbf77; --accent-soft:#25311f; --accent-ink:#13170f;
+      --warn:#e59b6a; --warn-soft:#33241a; --grid:#2b3325;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#13170f; --surface:#1b2018; --surface-2:#232a1f;
+    --text:#e9ede4; --muted:#a3ae9c; --border:#333c2d;
+    --accent:#8fbf77; --accent-soft:#25311f; --accent-ink:#13170f;
+    --warn:#e59b6a; --warn-soft:#33241a; --grid:#2b3325;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--text);
+       font-family:Calibri,"Segoe UI",Arial,sans-serif; font-size:16px; line-height:1.45}
+  .wrap{max-width:900px; margin:0 auto; padding:22px 16px 56px}
+  h1{font-family:Cambria,Georgia,serif; font-size:27px; margin:0}
+  .sub{color:var(--muted); font-size:14px; margin:3px 0 20px}
+  .card{background:var(--surface); border:1px solid var(--border);
+        border-radius:12px; padding:17px; margin-bottom:16px}
+  .card h2{font-family:Cambria,Georgia,serif; font-size:18px; margin:0 0 13px;
+           display:flex; align-items:center; gap:9px}
+  .dot{width:21px; height:21px; border-radius:50%; background:var(--accent-soft); color:var(--accent);
+       display:inline-flex; align-items:center; justify-content:center;
+       font-size:12px; font-weight:700; font-family:Calibri,Arial,sans-serif; flex:0 0 auto}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:12px}
+  label{display:block; font-size:12.5px; color:var(--muted); margin-bottom:4px}
+  input,select{width:100%; padding:8px 10px; font-size:15px; font-family:inherit;
+    color:var(--text); background:var(--bg); border:1px solid var(--border); border-radius:7px}
+  input:focus,select:focus{outline:2px solid var(--accent); outline-offset:-1px}
+  input.bad{border-color:var(--warn); background:var(--warn-soft)}
+  .hint{font-size:11.5px; color:var(--muted); margin-top:3px; min-height:14px}
+  .hint.bad{color:var(--warn)}
+  .row-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:15px; align-items:center}
+  button{font-family:inherit; font-size:15px; padding:9px 15px; border-radius:7px;
+    border:1px solid var(--border); background:var(--surface-2); color:var(--text); cursor:pointer}
+  button:hover{border-color:var(--accent)}
+  button.primary{background:var(--accent); color:var(--accent-ink); border-color:var(--accent); font-weight:600}
+  button.small{font-size:13px; padding:6px 11px}
+  button.link{background:none; border:none; color:var(--muted); text-decoration:underline; padding:6px 2px}
+  .status{font-size:13px; color:var(--muted)}
+  .tablewrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse; width:100%; font-size:13.5px; min-width:620px}
+  th,td{padding:7px 9px; text-align:right; border-bottom:1px solid var(--border); white-space:nowrap}
+  th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+  thead th{color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.03em}
+  td.flag{color:var(--warn); font-weight:700; background:var(--warn-soft)}
+  .empty{color:var(--muted); font-size:14px; padding:16px 2px}
+  .flagbar{display:none; gap:9px; padding:11px 13px; border-radius:9px;
+    background:var(--warn-soft); color:var(--warn); font-size:13.5px; margin-bottom:13px}
+  .flagbar.on{display:flex}
+  .chartbar{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:12px}
+  #chart{width:100%; height:380px}
+  footer{color:var(--muted); font-size:12.5px; margin-top:24px; line-height:1.6}
+  code{background:var(--surface-2); padding:1px 5px; border-radius:4px;
+       font-family:"Courier New",monospace; font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>StreamLog</h1>
+  <p class="sub">Registro de sonda multiparamétrica em campo, com checagem imediata e gráfico</p>
+
+  <section class="card">
+    <h2><span class="dot">1</span>Nova leitura</h2>
+    <div class="grid">
+      <div>
+        <label for="f_riacho">Riacho</label>
+        <input id="f_riacho" list="l_riachos" placeholder="Cabelo Duro">
+        <datalist id="l_riachos">
+          <option value="Córrego Cabelo Duro"><option value="Rio Açúcar">
+          <option value="Ribeirão Chiqueirão"><option value="Córrego Santa Rosa">
+        </datalist>
+        <div class="hint"></div>
+      </div>
+      <div>
+        <label for="f_ponto">Ponto</label>
+        <input id="f_ponto" placeholder="P1">
+        <div class="hint"></div>
+      </div>
+      <div>
+        <label for="f_data">Data e hora</label>
+        <input id="f_data" type="datetime-local">
+        <div class="hint"></div>
+      </div>
+    </div>
+    <div class="grid" style="margin-top:12px" id="varGrid"></div>
+    <div class="row-actions">
+      <button class="primary" id="btnAdd">Adicionar leitura</button>
+      <button id="btnClearForm">Limpar</button>
+      <span class="status" id="formStatus"></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="dot">2</span>Leituras <span class="status" id="count" style="margin-left:auto"></span></h2>
+    <div class="flagbar" id="flagbar"><span>⚠</span><span id="flagtext"></span></div>
+    <div class="tablewrap" id="tablewrap"></div>
+    <div class="row-actions">
+      <button class="small" id="btnCsv">Exportar CSV</button>
+      <button class="small" id="btnDemo">Dados de exemplo</button>
+      <button class="link" id="btnWipe">Apagar tudo</button>
+      <span class="status" id="saveStatus"></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="dot">3</span>Gráfico</h2>
+    <div class="chartbar">
+      <div><label for="c_y">Variável</label><select id="c_y"></select></div>
+      <div><label for="c_x">Eixo X</label>
+        <select id="c_x"><option value="__time">Hora</option><option value="__ponto">Ponto</option></select>
+      </div>
+      <div><label for="c_type">Tipo</label>
+        <select id="c_type">
+          <option value="lines+markers">Linha + pontos</option>
+          <option value="markers">Dispersão</option>
+          <option value="box">Boxplot por riacho</option>
+        </select>
+      </div>
+    </div>
+    <div id="chart"></div>
+  </section>
+
+  <footer>
+    Roda offline, sem servidor. As leituras ficam salvas no navegador do próprio aparelho e saem em <code>.csv</code> pronto para o R.
+    As faixas de plausibilidade estão na constante <code>VARS</code>, no início do script — ajuste por bacia antes da campanha.
+  </footer>
+</div>
+
+<script>
+// variáveis de sonda: chave, rótulo, unidade, faixa plausível
+const VARS = [
+  {k:"temp", lab:"Temperatura",   un:"°C",    min:14,  max:34,  step:"0.1"},
+  {k:"ph",   lab:"pH",            un:"",      min:6.0, max:9.2, step:"0.01"},
+  {k:"od",   lab:"OD",            un:"mg/L",  min:2,   max:14,  step:"0.1"},
+  {k:"cond", lab:"Condutividade", un:"µS/cm", min:20,  max:900, step:"1"},
+  {k:"turb", lab:"Turbidez",      un:"NTU",   min:0,   max:150, step:"0.1"},
+  {k:"orp",  lab:"ORP",           un:"mV",    min:-200,max:600, step:"1"}
+];
+const KEY="streamlog:sonda:v1";
+const PALETTE=["#2c5f2d","#97bc62","#50808e","#b85042","#6d2e46","#c9a227"];
+let rows=[];
+
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(rows)); setSave("Salvo no aparelho"); }
+                 catch(e){ setSave("Sem armazenamento — exporte o CSV antes de fechar"); } }
+function load(){ try{ const r=localStorage.getItem(KEY); rows=r?JSON.parse(r):[]; }catch(e){ rows=[]; }
+                 if(!Array.isArray(rows)) rows=[]; }
+function setSave(t){ document.getElementById("saveStatus").textContent=t; }
+
+const grid=document.getElementById("varGrid");
+VARS.forEach(v=>{
+  const d=document.createElement("div");
+  d.innerHTML=`<label for="f_${v.k}">${v.lab}${v.un?" ("+v.un+")":""}</label>
+    <input id="f_${v.k}" type="number" step="${v.step}" inputmode="decimal" placeholder="—">
+    <div class="hint" id="h_${v.k}"></div>`;
+  grid.appendChild(d);
+  d.querySelector("input").addEventListener("input",()=>checkField(v));
+});
+function checkField(v){
+  const inp=document.getElementById("f_"+v.k), hint=document.getElementById("h_"+v.k);
+  const val=inp.value.trim();
+  if(val===""){ inp.classList.remove("bad"); hint.textContent=""; hint.classList.remove("bad"); return; }
+  const n=parseFloat(val);
+  if(isNaN(n)||n<v.min||n>v.max){ inp.classList.add("bad"); hint.classList.add("bad");
+    hint.textContent=`fora da faixa (${v.min}–${v.max})`; }
+  else { inp.classList.remove("bad"); hint.classList.remove("bad"); hint.textContent=""; }
+}
+function nowLocal(){ const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
+                     return d.toISOString().slice(0,16); }
+document.getElementById("f_data").value=nowLocal();
+
+document.getElementById("btnAdd").addEventListener("click",()=>{
+  const riacho=document.getElementById("f_riacho").value.trim();
+  const ponto=document.getElementById("f_ponto").value.trim();
+  const data=document.getElementById("f_data").value;
+  const st=document.getElementById("formStatus");
+  if(!riacho){ st.textContent="Informe o riacho."; return; }
+  const rec={riacho, ponto:ponto||"—", data:data||nowLocal()};
+  let any=false;
+  VARS.forEach(v=>{ const raw=document.getElementById("f_"+v.k).value.trim();
+                    if(raw!==""){ rec[v.k]=parseFloat(raw); any=true; } });
+  if(!any){ st.textContent="Preencha ao menos uma variável."; return; }
+  rows.push(rec); save(); render(); drawChart();
+  VARS.forEach(v=>{ document.getElementById("f_"+v.k).value=""; checkField(v); });
+  document.getElementById("f_data").value=nowLocal();
+  st.textContent="Leitura adicionada."; setTimeout(()=>st.textContent="",2500);
+});
+document.getElementById("btnClearForm").addEventListener("click",()=>{
+  ["f_riacho","f_ponto"].forEach(id=>document.getElementById(id).value="");
+  VARS.forEach(v=>{ document.getElementById("f_"+v.k).value=""; checkField(v); });
+  document.getElementById("f_data").value=nowLocal();
+});
+
+function outOfRange(r,v){ return r[v.k]!==undefined && (r[v.k]<v.min||r[v.k]>v.max); }
+function render(){
+  const wrap=document.getElementById("tablewrap");
+  document.getElementById("count").textContent=rows.length?rows.length+" leitura(s)":"";
+  if(!rows.length){
+    wrap.innerHTML='<div class="empty">Nenhuma leitura ainda.</div>';
+    document.getElementById("flagbar").classList.remove("on"); return;
+  }
+  let flags=0, h="<table><thead><tr><th>Riacho</th><th>Ponto</th><th>Hora</th>";
+  VARS.forEach(v=>h+=`<th>${v.lab}</th>`); h+="<th></th></tr></thead><tbody>";
+  rows.forEach((r,i)=>{
+    h+=`<tr><td>${esc(r.riacho)}</td><td>${esc(r.ponto)}</td><td>${(r.data||"").replace("T"," ")}</td>`;
+    VARS.forEach(v=>{ const bad=outOfRange(r,v); if(bad) flags++;
+      h+=`<td class="${bad?"flag":""}">${r[v.k]===undefined?"":r[v.k]}</td>`; });
+    h+=`<td><button class="small" data-del="${i}">×</button></td></tr>`;
+  });
+  wrap.innerHTML=h+"</tbody></table>";
+  wrap.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>{
+    rows.splice(+b.dataset.del,1); save(); render(); drawChart(); }));
+  const fb=document.getElementById("flagbar");
+  if(flags){ fb.classList.add("on");
+    document.getElementById("flagtext").textContent=
+      `${flags} valor(es) fora da faixa esperada — confira a sonda antes de sair do ponto.`; }
+  else fb.classList.remove("on");
+}
+function esc(s){ return String(s).replace(/[<>&]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;"}[c])); }
+
+const selY=document.getElementById("c_y");
+VARS.forEach(v=>{ const o=document.createElement("option");
+  o.value=v.k; o.textContent=v.lab+(v.un?" ("+v.un+")":""); selY.appendChild(o); });
+["c_y","c_x","c_type"].forEach(id=>document.getElementById(id).addEventListener("change",drawChart));
+
+function drawChart(){
+  const yk=selY.value, xk=document.getElementById("c_x").value;
+  const type=document.getElementById("c_type").value;
+  const v=VARS.find(a=>a.k===yk);
+  const cs=getComputedStyle(document.documentElement);
+  const cText=cs.getPropertyValue("--text").trim()||"#1b2018";
+  const cGrid=cs.getPropertyValue("--grid").trim()||"#dfe3da";
+  const el=document.getElementById("chart");
+  const data=rows.filter(r=>r[yk]!==undefined);
+  if(!data.length){ Plotly.purge(el); el.innerHTML='<div class="empty">Sem dados para esta variável.</div>'; return; }
+  el.innerHTML="";
+  const sites=[...new Set(data.map(r=>r.riacho))];
+  const traces=sites.map((s,i)=>{
+    const sub=data.filter(r=>r.riacho===s).sort((a,b)=>(a.data||"").localeCompare(b.data||""));
+    const color=PALETTE[i%PALETTE.length];
+    if(type==="box") return {type:"box",name:s,y:sub.map(r=>r[yk]),marker:{color},
+                             boxpoints:"all",jitter:0.4,pointpos:0};
+    return {type:"scatter",mode:type,name:s,
+      x:sub.map(r=> xk==="__time" ? (r.data||"").replace("T"," ") : r.ponto),
+      y:sub.map(r=>r[yk]),
+      marker:{size:9,color,line:{width:1.5,color:"rgba(0,0,0,.25)"}},
+      line:{width:2,color},
+      hovertemplate:"%{x}<br><b>%{y}</b> "+(v.un||"")+"<extra>"+s+"</extra>"};
+  });
+  Plotly.newPlot(el,traces,{
+    margin:{l:56,r:14,t:12,b:54},
+    paper_bgcolor:"rgba(0,0,0,0)", plot_bgcolor:"rgba(0,0,0,0)",
+    font:{family:"Calibri, Arial, sans-serif",size:13,color:cText},
+    xaxis:{title:{text:type==="box"?"":(xk==="__time"?"Hora":"Ponto")},
+           gridcolor:cGrid, zeroline:false, type:(type==="box"?undefined:"category")},
+    yaxis:{title:{text:v.lab+(v.un?" ("+v.un+")":"")}, gridcolor:cGrid, zeroline:false},
+    shapes:type!=="box"?[{type:"rect",xref:"paper",yref:"y",x0:0,x1:1,y0:v.min,y1:v.max,
+      fillcolor:"rgba(44,95,45,.07)",line:{width:0},layer:"below"}]:[],
+    showlegend:sites.length>1, legend:{orientation:"h",y:-0.22}, hovermode:"closest"
+  },{displayModeBar:false,responsive:true});
+}
+
+document.getElementById("btnCsv").addEventListener("click",()=>{
+  if(!rows.length) return;
+  const head=["riacho","ponto","data"].concat(VARS.map(v=>v.k));
+  const lines=[head.join(",")].concat(rows.map(r=>head.map(h=>{
+    const val=r[h]===undefined?"":r[h];
+    return /[",\n]/.test(String(val))?'"'+String(val).replace(/"/g,'""')+'"':val;
+  }).join(",")));
+  const blob=new Blob(["\uFEFF"+lines.join("\n")],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="sonda_"+new Date().toISOString().slice(0,10)+".csv";
+  a.click(); URL.revokeObjectURL(a.href);
+});
+
+document.getElementById("btnDemo").addEventListener("click",()=>{
+  const sites=["Córrego Cabelo Duro","Rio Açúcar","Ribeirão Chiqueirão"];
+  const base={temp:24.5,ph:7.9,od:8.2,cond:420,turb:6,orp:210};
+  const out=[];
+  sites.forEach((s,si)=>{
+    for(let p=1;p<=6;p++){
+      const d=new Date(2026,8,14+si,8,0); d.setMinutes(d.getMinutes()+p*35);
+      d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
+      const rec={riacho:s,ponto:"P"+p,data:d.toISOString().slice(0,16)};
+      VARS.forEach(v=>{ const j=(Math.random()-0.5)*2;
+        rec[v.k]=Math.round(base[v.k]*(1+si*0.07+j*0.08)*10)/10; });
+      if(si===1&&p===4) rec.cond=1180;  // erro plantado: sonda descalibrada
+      out.push(rec);
+    }
+  });
+  rows=out; save(); render(); drawChart();
+});
+document.getElementById("btnWipe").addEventListener("click",()=>{
+  if(rows.length&&confirm("Apagar todas as leituras deste aparelho?")){ rows=[]; save(); render(); drawChart(); }
+});
+
+load(); render(); drawChart();
+if(!rows.length) setSave("");
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",drawChart);
+</script>
+</body>
+</html>
