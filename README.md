@@ -5,7 +5,7 @@ Registro de leituras de sonda multiparamétrica em campo, direto no navegador, c
 
 Funciona offline, em celular ou notebook, sem instalação e sem servidor.
 
-**Acesse:** https://SEU-USUARIO.github.io/streamlog/
+**Acesse:** https://kauanfonseca.github.io/streamlog/
 
 ---
 
