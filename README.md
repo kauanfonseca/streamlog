@@ -1,5 +1,8 @@
-[README.md](https://github.com/user-attachments/files/32262633/README.md)
+[README.md](https://github.com/user-attachments/files/32295307/README.md)
 # StreamLog
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22784736.svg)](https://doi.org/10.5281/zenodo.22784736)
+[![Licença: MIT](https://img.shields.io/badge/Licen%C3%A7a-MIT-green.svg)](LICENSE)
 
 Registro de leituras de sonda multiparamétrica em campo, direto no navegador, com checagem imediata de consistência e visualização interativa.
 
@@ -11,7 +14,7 @@ Funciona offline, em celular ou notebook, sem instalação e sem servidor.
 
 ## Por que existe
 
-Em campanhas de campo em riachos, erros de leitura (sonda descalibrada, dígito trocado na anotação, eletrodo sujo) costumam ser descobertos só semanas depois, na digitação da planilha — quando voltar ao ponto já não é viável. O StreamLog sinaliza o valor suspeito no momento da digitação, ainda com a equipe no riacho, permitindo repetir a leitura na hora.
+Em campanhas de campo em riachos de cabeceira, erros de leitura (sonda descalibrada, dígito trocado na anotação, eletrodo sujo) costumam ser descobertos só semanas depois, na digitação da planilha — quando voltar ao ponto já não é viável. O StreamLog sinaliza o valor suspeito no momento da digitação, ainda com a equipe no riacho, permitindo repetir a leitura na hora.
 
 Resultado esperado: menos retrabalho, menos deslocamento repetido e dados mais confiáveis ao fim da campanha.
 
@@ -86,11 +89,15 @@ Arquivo único em HTML, sem dependências além do [Plotly.js](https://plotly.co
 
 ## Licença
 
-MIT.
+Distribuído sob a [Licença MIT](LICENSE) — uso, modificação e redistribuição livres, inclusive para fins comerciais, mantida a atribuição de autoria.
 
 ## Como citar
 
-> Fonseca, K. N. StreamLog: interface para registro e checagem de dados de sonda multiparamétrica em campo. Disponível em: https://github.com/SEU-USUARIO/streamlog
+> Fonseca, K. N. (2026). *StreamLog: interface para registro e checagem de dados em campo* (Versão v1.0.0) [Software]. Zenodo. https://doi.org/10.5281/zenodo.22784736
+
+O repositório inclui um arquivo [`CITATION.cff`](CITATION.cff): no topo desta página, o botão **Cite this repository** gera a citação pronta em BibTeX ou APA.
+
+O DOI acima aponta sempre para a versão mais recente. Para referenciar exatamente a v1.0.0, use o DOI específico daquela versão, disponível na página do registro no Zenodo.
 
 ---
 
