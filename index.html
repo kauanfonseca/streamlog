@@ -7,38 +7,44 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
 <style>
   :root{
-    --bg:#ffffff; --surface:#f6f7f5; --surface-2:#eceee9;
-    --text:#1b2018; --muted:#5f6b5c; --border:#d6dad1;
-    --accent:#2c5f2d; --accent-soft:#e3ece1; --accent-ink:#ffffff;
-    --warn:#b4531f; --warn-soft:#fceee4; --grid:#dfe3da;
+    --bg:#ffffff; --surface:#f1f6f5; --surface-2:#dce5e5;
+    --text:#3b3f3e; --muted:#6e7d92; --border:#c3d3d2;
+    --accent:#2b877c; --accent-soft:#dbeae6; --accent-ink:#ffffff;
+    --heading:#20426e;
+    --warn:#7a4e0a; --warn-soft:#f4f3bf; --grid:#dce5e5;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --bg:#13170f; --surface:#1b2018; --surface-2:#232a1f;
-      --text:#e9ede4; --muted:#a3ae9c; --border:#333c2d;
-      --accent:#8fbf77; --accent-soft:#25311f; --accent-ink:#13170f;
-      --warn:#e59b6a; --warn-soft:#33241a; --grid:#2b3325;
+      --bg:#14201f; --surface:#1b2827; --surface-2:#243231;
+      --text:#dce5e5; --muted:#9aacb4; --border:#33423f;
+      --accent:#62a39a; --accent-soft:#1e332f; --accent-ink:#14201f;
+      --heading:#b0d9c9;
+      --warn:#e3c882; --warn-soft:#2f3122; --grid:#2b3937;
     }
   }
   :root[data-theme="dark"]{
-    --bg:#13170f; --surface:#1b2018; --surface-2:#232a1f;
-    --text:#e9ede4; --muted:#a3ae9c; --border:#333c2d;
-    --accent:#8fbf77; --accent-soft:#25311f; --accent-ink:#13170f;
-    --warn:#e59b6a; --warn-soft:#33241a; --grid:#2b3325;
+    --bg:#14201f; --surface:#1b2827; --surface-2:#243231;
+    --text:#dce5e5; --muted:#9aacb4; --border:#33423f;
+    --accent:#62a39a; --accent-soft:#1e332f; --accent-ink:#14201f;
+    --heading:#b0d9c9;
+    --warn:#e3c882; --warn-soft:#2f3122; --grid:#2b3937;
   }
   *{box-sizing:border-box}
   body{margin:0; background:var(--bg); color:var(--text);
-       font-family:Calibri,"Segoe UI",Arial,sans-serif; font-size:16px; line-height:1.45}
+       font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif; font-size:16px; line-height:1.45;
+       -webkit-font-smoothing:antialiased}
   .wrap{max-width:900px; margin:0 auto; padding:22px 16px 56px}
-  h1{font-family:Cambria,Georgia,serif; font-size:27px; margin:0}
+  h1{font-family:inherit; font-size:27px; font-weight:600; letter-spacing:-.02em;
+     color:var(--heading); margin:0}
   .sub{color:var(--muted); font-size:14px; margin:3px 0 20px}
   .card{background:var(--surface); border:1px solid var(--border);
         border-radius:12px; padding:17px; margin-bottom:16px}
-  .card h2{font-family:Cambria,Georgia,serif; font-size:18px; margin:0 0 13px;
+  .card h2{font-family:inherit; font-size:17px; font-weight:600; letter-spacing:-.01em;
+           color:var(--heading); margin:0 0 13px;
            display:flex; align-items:center; gap:9px}
   .dot{width:21px; height:21px; border-radius:50%; background:var(--accent-soft); color:var(--accent);
        display:inline-flex; align-items:center; justify-content:center;
-       font-size:12px; font-weight:700; font-family:Calibri,Arial,sans-serif; flex:0 0 auto}
+       font-size:12px; font-weight:600; font-family:inherit; flex:0 0 auto}
   .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:12px}
   label{display:block; font-size:12.5px; color:var(--muted); margin-bottom:4px}
   input,select{width:100%; padding:8px 10px; font-size:15px; font-family:inherit;
@@ -63,13 +69,20 @@
   td.flag{color:var(--warn); font-weight:700; background:var(--warn-soft)}
   .empty{color:var(--muted); font-size:14px; padding:16px 2px}
   .flagbar{display:none; gap:9px; padding:11px 13px; border-radius:9px;
-    background:var(--warn-soft); color:var(--warn); font-size:13.5px; margin-bottom:13px}
+    background:var(--warn-soft); color:var(--warn); font-size:13.5px; margin-bottom:13px;
+    border-left:3px solid var(--warn); font-weight:500}
   .flagbar.on{display:flex}
   .chartbar{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:12px}
   #chart{width:100%; height:380px}
+  @media (max-width:560px){
+    .grid{grid-template-columns:repeat(2,1fr)}
+    .grid .full{grid-column:1/-1}
+    #chart{height:430px}
+    .wrap{padding:18px 13px 44px}
+  }
   footer{color:var(--muted); font-size:12.5px; margin-top:24px; line-height:1.6}
   code{background:var(--surface-2); padding:1px 5px; border-radius:4px;
-       font-family:"Courier New",monospace; font-size:12.5px}
+       font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace; font-size:12.5px}
 </style>
 </head>
 <body>
@@ -95,7 +108,7 @@
         <input id="f_ponto" placeholder="P1">
         <div class="hint"></div>
       </div>
-      <div>
+      <div class="full">
         <label for="f_data">Data e hora</label>
         <input id="f_data" type="datetime-local">
         <div class="hint"></div>
@@ -124,6 +137,7 @@
   <section class="card">
     <h2><span class="dot">3</span>Gráfico</h2>
     <div class="chartbar">
+      <div><label for="c_site">Riacho</label><select id="c_site"></select></div>
       <div><label for="c_y">Variável</label><select id="c_y"></select></div>
       <div><label for="c_x">Eixo X</label>
         <select id="c_x"><option value="__time">Hora</option><option value="__ponto">Ponto</option></select>
@@ -156,7 +170,7 @@ const VARS = [
   {k:"orp",  lab:"ORP",           un:"mV",    min:-200,max:600, step:"1"}
 ];
 const KEY="streamlog:sonda:v1";
-const PALETTE=["#2c5f2d","#97bc62","#50808e","#b85042","#6d2e46","#c9a227"];
+const PALETTE=["#2b877c","#6e7d92","#b0d9c9","#20426e","#62a39a","#3b3f3e"];
 let rows=[];
 
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(rows)); setSave("Salvo no aparelho"); }
@@ -211,6 +225,7 @@ document.getElementById("btnClearForm").addEventListener("click",()=>{
 
 function outOfRange(r,v){ return r[v.k]!==undefined && (r[v.k]<v.min||r[v.k]>v.max); }
 function render(){
+  refreshSites();
   const wrap=document.getElementById("tablewrap");
   document.getElementById("count").textContent=rows.length?rows.length+" leitura(s)":"";
   if(!rows.length){
@@ -239,8 +254,26 @@ function esc(s){ return String(s).replace(/[<>&]/g,c=>({"<":"&lt;",">":"&gt;","&
 const selY=document.getElementById("c_y");
 VARS.forEach(v=>{ const o=document.createElement("option");
   o.value=v.k; o.textContent=v.lab+(v.un?" ("+v.un+")":""); selY.appendChild(o); });
-["c_y","c_x","c_type"].forEach(id=>document.getElementById(id).addEventListener("change",drawChart));
+["c_site","c_y","c_x","c_type"].forEach(id=>document.getElementById(id).addEventListener("change",drawChart));
 
+function refreshSites(){
+  const sel=document.getElementById("c_site");
+  const atual=sel.value;
+  const nomes=[...new Set(rows.map(r=>r.riacho))].sort((a,b)=>a.localeCompare(b,"pt-BR"));
+  sel.innerHTML="";
+  const todos=document.createElement("option");
+  todos.value="__all"; todos.textContent="Todos"+(nomes.length?" ("+nomes.length+")":"");
+  sel.appendChild(todos);
+  nomes.forEach(n=>{ const o=document.createElement("option"); o.value=n; o.textContent=n; sel.appendChild(o); });
+  sel.value = nomes.includes(atual) ? atual : "__all";
+}
+
+function shortTime(d){
+  if(!d) return "";
+  const [dt,hm]=d.split("T");
+  const [y,m,day]=dt.split("-");
+  return day+"/"+m+" "+(hm||"");
+}
 function drawChart(){
   const yk=selY.value, xk=document.getElementById("c_x").value;
   const type=document.getElementById("c_type").value;
@@ -249,8 +282,12 @@ function drawChart(){
   const cText=cs.getPropertyValue("--text").trim()||"#1b2018";
   const cGrid=cs.getPropertyValue("--grid").trim()||"#dfe3da";
   const el=document.getElementById("chart");
-  const data=rows.filter(r=>r[yk]!==undefined);
-  if(!data.length){ Plotly.purge(el); el.innerHTML='<div class="empty">Sem dados para esta variável.</div>'; return; }
+  const narrow = window.innerWidth < 640;
+  const site=document.getElementById("c_site").value;
+  const data=rows.filter(r=>r[yk]!==undefined && (site==="__all"||r.riacho===site));
+  if(!data.length){ Plotly.purge(el);
+    el.innerHTML='<div class="empty">'+(site==="__all"?"Sem dados para esta variável.":"Sem dados para este riacho nesta variável.")+'</div>';
+    return; }
   el.innerHTML="";
   const sites=[...new Set(data.map(r=>r.riacho))];
   const traces=sites.map((s,i)=>{
@@ -259,22 +296,23 @@ function drawChart(){
     if(type==="box") return {type:"box",name:s,y:sub.map(r=>r[yk]),marker:{color},
                              boxpoints:"all",jitter:0.4,pointpos:0};
     return {type:"scatter",mode:type,name:s,
-      x:sub.map(r=> xk==="__time" ? (r.data||"").replace("T"," ") : r.ponto),
+      x:sub.map(r=> xk==="__time" ? shortTime(r.data) : r.ponto),
       y:sub.map(r=>r[yk]),
       marker:{size:9,color,line:{width:1.5,color:"rgba(0,0,0,.25)"}},
       line:{width:2,color},
       hovertemplate:"%{x}<br><b>%{y}</b> "+(v.un||"")+"<extra>"+s+"</extra>"};
   });
   Plotly.newPlot(el,traces,{
-    margin:{l:56,r:14,t:12,b:54},
+    margin:{l:56,r:14,t:narrow?52:34,b:narrow?96:64},
     paper_bgcolor:"rgba(0,0,0,0)", plot_bgcolor:"rgba(0,0,0,0)",
-    font:{family:"Calibri, Arial, sans-serif",size:13,color:cText},
-    xaxis:{title:{text:type==="box"?"":(xk==="__time"?"Hora":"Ponto")},
-           gridcolor:cGrid, zeroline:false, type:(type==="box"?undefined:"category")},
-    yaxis:{title:{text:v.lab+(v.un?" ("+v.un+")":"")}, gridcolor:cGrid, zeroline:false},
+    font:{family:'-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif',size:13,color:cText},
+    xaxis:{title:{text:(narrow||type==="box")?"":(xk==="__time"?"Hora":"Ponto")},
+           gridcolor:cGrid, zeroline:false, type:(type==="box"?undefined:"category"),
+           tickangle:-45, nticks:narrow?6:undefined, automargin:true},
+    yaxis:{title:{text:v.lab+(v.un?" ("+v.un+")":"")}, gridcolor:cGrid, zeroline:false, automargin:true},
     shapes:type!=="box"?[{type:"rect",xref:"paper",yref:"y",x0:0,x1:1,y0:v.min,y1:v.max,
-      fillcolor:"rgba(44,95,45,.07)",line:{width:0},layer:"below"}]:[],
-    showlegend:sites.length>1, legend:{orientation:"h",y:-0.22}, hovermode:"closest"
+      fillcolor:"rgba(43,135,124,.08)",line:{width:0},layer:"below"}]:[],
+    showlegend:sites.length>1, legend:{orientation:"h",y:narrow?1.16:1.12,x:0,font:{size:narrow?11:13}}, hovermode:"closest"
   },{displayModeBar:false,responsive:true});
 }
 
@@ -316,6 +354,7 @@ document.getElementById("btnWipe").addEventListener("click",()=>{
 load(); render(); drawChart();
 if(!rows.length) setSave("");
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",drawChart);
+let rsz; window.addEventListener("resize",()=>{ clearTimeout(rsz); rsz=setTimeout(drawChart,250); });
 </script>
 </body>
 </html>
