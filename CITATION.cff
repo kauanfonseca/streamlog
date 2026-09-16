@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "Se você usar este software, por favor cite-o conforme abaixo."
+title: "StreamLog: interface para registro e checagem de dados em campo"
+abstract: >-
+  Aplicativo web open-source, em arquivo HTML único, para registro de leituras
+  de sonda multiparamétrica em campo. Funciona offline no navegador, sinaliza
+  valores fora da faixa de plausibilidade no momento da digitação e exporta os
+  dados em CSV para análise posterior.
+type: software
+authors:
+  - family-names: Fonseca
+    given-names: Kauan Nunes
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.22784736
+    description: DOI de todas as versões (aponta para a mais recente)
+doi: 10.5281/zenodo.22784736
+repository-code: "https://github.com/kauanfonseca/streamlog"
+url: "https://kauanfonseca.github.io/streamlog/"
+license: MIT
+version: v1.0.0
+date-released: "2026-09-16"
+keywords:
+  - ecologia de ecossistemas
+  - riachos
+  - coleta de dados em campo
+  - qualidade de dados
+  - sonda multiparamétrica
+  - ciência aberta
